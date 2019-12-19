@@ -1,16 +1,11 @@
 ---
-- name: Converge boot node
-  hosts: "*boot*"
-  become: true
-  gather_facts: smart
-  vars:
-    bc_polkadot_comp_state_boot: present
-    install_promstack: true
-  roles:
-    - role: tank.blockchain
+- name: Generate config files
+  hosts: localhost
   tasks:
-    - debug: msg="Bootstrap instance ready"
-      tags: [print_action]
+    - name: "Generate files using tendermint"
+      shell: |
+        docker run --rm -v /tmp/tender:/tmp/config tendermint/tendermint testnet \
+        --v 2 --o /tmp/config --populate-persistent-peers --hostname monach1 --hostname monach2
 
 - name: Converge validator node
   hosts: "*prod*"
