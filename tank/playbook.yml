@@ -1,11 +1,17 @@
 ---
-- name: Generate config files
+- name: Generate config
   hosts: localhost
   tasks:
-    - name: "Generate files using tendermint"
+    - name: "Add all ip addresses"
+      vars:
+        hostnames: ""
+      set_fact:
+        hostnames: "{{ hostnames }} --hostname {{ item }}"
+      loop: "{{ groups['all'] }}"
+
+    - name: "Generate config"
       shell: |
-        docker run --rm -v /tmp/tender:/tmp/config tendermint/tendermint testnet \
-        --v 2 --o /tmp/config --populate-persistent-peers --hostname monach1 --hostname monach2
+        tendermint testnet --v {{ play_hosts | length }} --o $(pwd)/files --config files/config-template.toml --populate-persistent-peers {{ hostnames }}
 
 - name: Converge validator node
   hosts: "*prod*"
@@ -29,4 +35,4 @@
     - debug: msg="Validator instance(s) ready"
       tags: [print_action]
     - set_fact:
-        bench_present: true
+        bench_present: false

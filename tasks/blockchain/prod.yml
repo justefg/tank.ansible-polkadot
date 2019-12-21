@@ -1,80 +1,85 @@
 ---
+- name: Copy config and start nodes
+  hosts: "*"
+  tasks: 
+    - name: "Copy config to remote host"
+      copy:
+        src: node{{ play_hosts.index(inventory_hostname) | int }}
+        dest: /opt/config
+        mode: 0644
+    
+    - name: "Set config dir permissions to 0777"
+      shell: chmod -R 777 /opt/config/node{{ play_hosts.index(inventory_hostname) | int }}
 
-- name: "Make directory structure"
-  tags:
-    - prod
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: 1000
-  with_items:
-    - "{{ bc_path_config }}"
-    - "{{ bc_path_state }}"
+    - name: "Install docker python module"
+      pip:
+        name: docker
 
-- name: "Start {{ bc_name }}-{{ bc_component_name }} container"
-  tags:
-    - prod
-  docker_container:
-    name: "{{ bc_name }}-{{ bc_component_name }}"
-    image: "{{ bc_polkadot_image }}"
-    command: |
-      /usr/local/bin/polkadot -d /state
-      --chain=bench --validator --ws-external --rpc-external --rpc-cors=all
-      --bootnodes "/ip4/{{ bc_boot_ip[0] }}/tcp/30333/p2p/QmXS53cQyDRT7RaXiKYLjfkX8xSc9pBDPohDh1F3HxzjAz"
-    hostname: "{{ bc_name }}-{{ bc_component_name }}"
-    network_mode: host
-    volumes:
-      - "{{ bc_path_state }}:/state"
-    env:
-      EXTRA_VALIDATORS: "{{ (groups['bcpeers'] | length) - (groups['bcboot'] | length) }}"
-      EXTRA_ENDOWED: "{{ bc_polkadot_extra_endowed }}"
-    stop_timeout: 600
-    pull: true
+    - name: "Start tendermint container"
+      docker_container:
+        name: "tendermint-producer"
+        image: "tendermint/tendermint"
+        command: node --proxy_app kvstore
+        network_mode: host
+        volumes:
+          - "/opt/config:/config"
+        exposed_ports:
+          - 26656
+          - 26657
+          - 26660
+        ports:
+          - "26656:26656"
+          - "26657:26657"
+          - "26660:26660"
+        env:
+          TMHOME: /config/node{{ play_hosts.index(inventory_hostname) | int }}
+        stop_timeout: 600
+        pull: true
 
-- name: "Check health producer"
-  uri:
-    url: "http://localhost:9933"
-    method: POST
-    body: '{"jsonrpc":"2.0", "method":"system_health", "params": [], "id":1}'
-    body_format: json
-    status_code: 200
-  register: check_producer
-  retries: 15
-  delay: 10
-  until: check_producer is success
-  tags:
-    - prod
+# - name: "Check health producer"
+#   uri:
+#     url: "http://localhost:9933"
+#     method: POST
+#     body: '{"jsonrpc":"2.0", "method":"system_health", "params": [], "id":1}'
+#     body_format: json
+#     status_code: 200
+#   register: check_producer
+#   retries: 15
+#   delay: 10
+#   until: check_producer is success
+#   tags:
+#     - prod
 
-- name: "Set producer keys"
-  uri:
-    url: "http://localhost:9933"
-    method: POST
-    body: '{"jsonrpc":"2.0", "method":"author_insertKey", "params": [{{ item }}], "id":1}'
-    body_format: json
-    status_code: 200
-  with_items:
-    "{{ lookup('template', 'nodekeys/{{ bc_polkadot_extra_validator_id }}.txt.j2').splitlines() }}"
-  tags:
-    - prod
+# - name: "Set producer keys"
+#   uri:
+#     url: "http://localhost:9933"
+#     method: POST
+#     body: '{"jsonrpc":"2.0", "method":"author_insertKey", "params": [{{ item }}], "id":1}'
+#     body_format: json
+#     status_code: 200
+#   with_items:
+#     "{{ lookup('template', 'nodekeys/{{ bc_polkadot_extra_validator_id }}.txt.j2').splitlines() }}"
+#   tags:
+#     - prod
 
-- name: "Stop the node to restart the container with the same command"
-  tags:
-    - prod
-  shell: docker restart {{ bc_name }}-{{ bc_component_name }}
+# - name: "Stop the node to restart the container with the same command"
+#   tags:
+#     - prod
+#   shell: docker restart {{ bc_name }}-{{ bc_component_name }}
 
-- name: "Check health producer after restart"
-  uri:
-    url: "http://localhost:9933"
-    method: POST
-    body: '{"jsonrpc":"2.0", "method":"system_health", "params": []}'
-    body_format: json
-    status_code: 200
-  register: check_producer_after_reboot
-  retries: 10
-  delay: 5
-  until: check_producer_after_reboot is success
-  tags:
-    - prod
+# - name: "Check health producer after restart"
+#   uri:
+#     url: "http://localhost:9933"
+#     method: POST
+#     body: '{"jsonrpc":"2.0", "method":"system_health", "params": []}'
+#     body_format: json
+#     status_code: 200
+#   register: check_producer_after_reboot
+#   retries: 10
+#   delay: 5
+#   until: check_producer_after_reboot is success
+#   tags:
+#     - prod
 
 - name: "Start {{ bc_name }}-{{ bc_component_name }}-metrics container"
   docker_container:
