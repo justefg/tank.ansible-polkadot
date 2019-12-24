@@ -18,8 +18,8 @@
   become: true
   gather_facts: smart
   vars:
-    bc_polkadot_comp_state_prod: present
-    bc_polkadot_comp_state_bench: present
+    bc_polkadot_comp_state_prod: absent
+    bc_polkadot_comp_state_bench: absent
     install_promstack: true
     bc_polkadot_extra_validator_id: "{{ play_hosts.index(inventory_hostname) | int }}"
     bc_polkadot_bench_shard_id: "{{ play_hosts.index(inventory_hostname) | int }}"
