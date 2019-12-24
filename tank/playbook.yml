@@ -11,7 +11,7 @@
 
     - name: "Generate config"
       shell: |
-        tendermint testnet --v {{ groups['all'] | length - 1}} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
+        tendermint testnet --v {{ groups['all'] | length }} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
 
 - name: Converge validator node
   hosts: "*prod*"

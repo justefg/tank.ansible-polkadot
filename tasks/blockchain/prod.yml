@@ -17,8 +17,8 @@
 
     - name: "Start tendermint container"
       docker_container:
-        name: "tendermint-producer"
-        image: "tendermint/tendermint"
+        name: "{{ bc_name }}_{{ bc_component_name }}"
+        image: {{ bc_polkadot_image }}
         command: node --proxy_app kvstore
         network_mode: host
         volumes:
