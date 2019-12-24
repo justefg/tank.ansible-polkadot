@@ -1,40 +1,37 @@
 ---
 - name: Copy config and start nodes
-  hosts: "*"
-  tasks: 
-    - name: "Copy config to remote host"
-      copy:
-        src: /tmp/configs/node{{ play_hosts.index(inventory_hostname) | int }}
-        dest: /opt/config
-        mode: 0644
-    
-    - name: "Set config dir permissions to 0777"
-      shell: chmod -R 777 /opt/config/node{{ play_hosts.index(inventory_hostname) | int }}
+  copy:
+    src: /tmp/configs/node{{ play_hosts.index(inventory_hostname) | int }}
+    dest: /opt/config
+    mode: 0644
 
-    - name: "Install docker python module"
-      pip:
-        name: docker
+- name: "Set config dir permissions to 0777"
+  shell: chmod -R 777 /opt/config/node{{ play_hosts.index(inventory_hostname) | int }}
 
-    - name: "Start tendermint container"
-      docker_container:
-        name: "{{ bc_name }}_{{ bc_component_name }}"
-        image: {{ bc_polkadot_image }}
-        command: node --proxy_app kvstore
-        network_mode: host
-        volumes:
-          - "/opt/config:/config"
-        exposed_ports:
-          - 26656
-          - 26657
-          - 26660
-        ports:
-          - "26656:26656"
-          - "26657:26657"
-          - "26660:26660"
-        env:
-          TMHOME: /config/node{{ play_hosts.index(inventory_hostname) | int }}
-        stop_timeout: 600
-        pull: true
+- name: "Install docker python module"
+  pip:
+    name: docker
+
+- name: "Start tendermint container"
+  docker_container:
+    name: "{{ bc_name }}_{{ bc_component_name }}"
+    image: "{{ bc_polkadot_image }}"
+    command: node --proxy_app kvstore
+    network_mode: host
+    volumes:
+      - "/opt/config:/config"
+    exposed_ports:
+      - 26656
+      - 26657
+      - 26660
+    ports:
+      - "26656:26656"
+      - "26657:26657"
+      - "26660:26660"
+    env:
+      TMHOME: /config/node{{ play_hosts.index(inventory_hostname) | int }}
+    stop_timeout: 600
+    pull: true
 
 # - name: "Check health producer"
 #   uri:
@@ -90,7 +87,6 @@
 #     network_mode: host
 #     stop_timeout: 600
 #     pull: true
-
 
 - name: List data about prod container
   debug:
