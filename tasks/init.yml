@@ -57,13 +57,13 @@
   when:
     - _create_group_monitoring is changed
 
-- name: "Set boot ip address"
-  run_once: true
-  tags:
-    - debug
-    - network
-  set_fact:
-    bc_boot_ip: "{{ groups['bcboot'] | map('extract', hostvars, ['ansible_'+bc_private_interface, 'ipv4', 'address']) | list }}"
+# - name: "Set boot ip address"
+#   run_once: true
+#   tags:
+#     - debug
+#     - network
+#   set_fact:
+#     bc_boot_ip: "{{ groups['bcboot'] | map('extract', hostvars, ['ansible_'+bc_private_interface, 'ipv4', 'address']) | list }}"
 
 - name: "Set all peers ip addresses"
   run_once: true
