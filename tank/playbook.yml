@@ -11,14 +11,14 @@
 
     - name: "Generate config"
       shell: |
-        tendermint testnet --v {{ groups['all'] | length }} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
+        tendermint testnet --v {{ groups['all'] | length - 1}} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
 
 - name: Converge validator node
   hosts: "*prod*"
   become: true
   gather_facts: smart
   vars:
-    bc_polkadot_comp_state_prod: absent
+    bc_polkadot_comp_state_prod: present
     bc_polkadot_comp_state_bench: absent
     install_promstack: true
     bc_polkadot_extra_validator_id: "{{ play_hosts.index(inventory_hostname) | int }}"

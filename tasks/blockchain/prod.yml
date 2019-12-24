@@ -81,15 +81,15 @@
 #   tags:
 #     - prod
 
-- name: "Start {{ bc_name }}-{{ bc_component_name }}-metrics container"
-  docker_container:
-    name: "{{ bc_name }}-{{ bc_component_name }}-metrics"
-    image: "{{ bc_polkadot_exporter_image }}"
-    command: --exporter_port "{{ bc_polkadot_node_metrics_port }}"
-    hostname: "{{ bc_name }}-{{ bc_component_name }}-metrics"
-    network_mode: host
-    stop_timeout: 600
-    pull: true
+# - name: "Start {{ bc_name }}-{{ bc_component_name }}-metrics container"
+#   docker_container:
+#     name: "{{ bc_name }}-{{ bc_component_name }}-metrics"
+#     image: "{{ bc_polkadot_exporter_image }}"
+#     command: --exporter_port "{{ bc_polkadot_node_metrics_port }}"
+#     hostname: "{{ bc_name }}-{{ bc_component_name }}-metrics"
+#     network_mode: host
+#     stop_timeout: 600
+#     pull: true
 
 
 - name: List data about prod container
