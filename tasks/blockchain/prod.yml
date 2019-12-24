@@ -4,7 +4,7 @@
   tasks: 
     - name: "Copy config to remote host"
       copy:
-        src: node{{ play_hosts.index(inventory_hostname) | int }}
+        src: /tmp/configs/node{{ play_hosts.index(inventory_hostname) | int }}
         dest: /opt/config
         mode: 0644
     

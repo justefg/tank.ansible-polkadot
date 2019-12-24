@@ -11,7 +11,7 @@
 
     - name: "Generate config"
       shell: |
-        tendermint testnet --v {{ play_hosts | length }} --o $(pwd)/files --config files/config-template.toml --populate-persistent-peers {{ hostnames }}
+        tendermint testnet --v {{ play_hosts | length }} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers {{ hostnames }}
 
 - name: Converge validator node
   hosts: "*prod*"

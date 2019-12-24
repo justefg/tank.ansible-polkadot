@@ -25,21 +25,21 @@
 #     - bc_polkadot_comp_state_boot == "present"
 
 
-# - name: "Processing prod component"
-#   block:
-#     - set_fact:
-#         bc_component_name: "prod"
+- name: "Processing prod component"
+  block:
+    - set_fact:
+        bc_component_name: "prod"
 
-#     - name: "Setup {{ bc_name }}-{{ bc_component_name }} container"
-#       include_tasks: "blockchain/{{ bc_component_name }}.yml"
+    - name: "Setup {{ bc_name }}-{{ bc_component_name }} container"
+      include_tasks: "blockchain/{{ bc_component_name }}.yml"
 
-#     - name: "Setup metrics to {{ bc_component_name }}"
-#       when:
-#         - install_promstack
-#       include_tasks: "metrics/{{ bc_component_name }}.yml"
+    - name: "Setup metrics to {{ bc_component_name }}"
+      when:
+        - install_promstack
+      include_tasks: "metrics/{{ bc_component_name }}.yml"
 
-#   when:
-#     - bc_polkadot_comp_state_prod == "present"
+  when:
+    - bc_polkadot_comp_state_prod == "present"
 
 
 # - name: "Processing bench component"
@@ -50,27 +50,27 @@
 #     - name: "Setup bench-polkadot"
 #       include_tasks: "bench/main.yml"
 
-#   when:
-#     - bc_polkadot_comp_state_bench == "present"
+  # when:
+  #   - bc_polkadot_comp_state_bench == "present"
 
 
-# - name: "Processing monitoring component"
-#   block:
-#     - set_fact:
-#         bc_component_name: "monitoring"
+- name: "Processing monitoring component"
+  block:
+    - set_fact:
+        bc_component_name: "monitoring"
 
-#     - name: "Setup metrics to {{ bc_component_name }}"
-#       when:
-#         - install_promstack
-#       include_tasks: "metrics/{{ item }}.yml"
-#       with_items:
-#         - "{{ bc_component_name }}"
-#         - "targets"
+    - name: "Setup metrics to {{ bc_component_name }}"
+      when:
+        - install_promstack
+      include_tasks: "metrics/{{ item }}.yml"
+      with_items:
+        - "{{ bc_component_name }}"
+        - "targets"
 
-#   when:
-#     - bc_polkadot_comp_state_monitoring == "present"
+  when:
+    - bc_polkadot_comp_state_monitoring == "present"
 
 
-# # clear variable
-# - set_fact:
-#     bc_component_name: ""
+# clear variable
+- set_fact:
+    bc_component_name: ""
