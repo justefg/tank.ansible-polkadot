@@ -9,11 +9,13 @@
   delegate_to: localhost
 
 - name: "Generate config"
+  run_once: true
   shell: tendermint testnet --v {{ groups['bcpeers'] | length }} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
   delegate_to: localhost
 
 - name: "Set localhost config dir permissions to 0777"
-  local_action: chmod -R 777 /tmp/configs
+  run_once: true
+  shell: chmod -R 777 /tmp/configs
 
 - name: Copy config and start nodes
   copy:
