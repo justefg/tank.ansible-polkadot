@@ -1,17 +1,17 @@
 ---
-- name: Generate config
-  hosts: localhost
-  tasks:
-    - name: "Add all ip addresses"
-      vars:
-        hostnames: ""
-      set_fact:
-        hostnames: "{{ hostnames }} --hostname {{ item }}"
-      loop: "{{ groups['all'] }}"
+# - name: Generate config
+#   hosts: localhost
+#   tasks:
+#     - name: "Add all ip addresses"
+#       vars:
+#         hostnames: ""
+#       set_fact:
+#         hostnames: "{{ hostnames }} --hostname {{ item }}"
+#       loop: "{{ groups['bcpeers'] }}"
 
-    - name: "Generate config"
-      shell: |
-        tendermint testnet --v {{ groups['all'] | length }} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
+#     - name: "Generate config"
+#       shell: |
+#         tendermint testnet --v {{ groups['bcpeers'] | length }} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
 
 - name: Converge validator node
   hosts: "*prod*"

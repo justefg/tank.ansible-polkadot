@@ -1,4 +1,17 @@
 ---
+
+- name: "Add all ip addresses"
+  vars:
+    hostnames: ""
+  set_fact:
+    hostnames: "{{ hostnames }} --hostname {{ item }}"
+  loop: "{{ groups['bcpeers'] }}"
+  delegate_to: localhost
+
+- name: "Generate config"
+  shell: tendermint testnet --v {{ groups['bcpeers'] | length }} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
+  delegate_to: localhost
+
 - name: Copy config and start nodes
   copy:
     src: /tmp/configs/node{{ play_hosts.index(inventory_hostname) | int }}
