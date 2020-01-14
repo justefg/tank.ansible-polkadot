@@ -17,6 +17,7 @@
   run_once: true
   shell: chmod -R 777 /tmp/configs
   delegate_to: localhost
+  become: true
 
 - name: Copy config and start nodes
   copy:
