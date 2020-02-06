@@ -4,20 +4,20 @@
   become: true
   gather_facts: smart
   vars:
-    bc_polkadot_comp_state_prod: present
-    bc_polkadot_comp_state_bench: absent
+    bc_tendermint_comp_state_prod: present
+    bc_tendermint_comp_state_bench: absent
     install_promstack: true
-    bc_polkadot_extra_validator_id: "{{ play_hosts.index(inventory_hostname) | int }}"
-    bc_polkadot_bench_shard_id: "{{ play_hosts.index(inventory_hostname) | int }}"
-    bc_polkadot_bench_shards: "{{ play_hosts | length }}"
+    bc_tendermint_extra_validator_id: "{{ play_hosts.index(inventory_hostname) | int }}"
+    bc_tendermint_bench_shard_id: "{{ play_hosts.index(inventory_hostname) | int }}"
+    bc_tendermint_bench_shards: "{{ play_hosts | length }}"
   roles:
     - role: tank.blockchain
   tasks:
-    - name: "Show bc_polkadot_extra_validator_id"
+    - name: "Show bc_tendermint_extra_validator_id"
       tags:
         - update
       debug:
-        msg: "{{ bc_polkadot_extra_validator_id }}"
+        msg: "{{ bc_tendermint_extra_validator_id }}"
     - debug: msg="Validator instance(s) ready"
       tags: [print_action]
     - set_fact:

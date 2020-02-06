@@ -39,7 +39,7 @@
       include_tasks: "metrics/{{ bc_component_name }}.yml"
 
   when:
-    - bc_polkadot_comp_state_prod == "present"
+    - bc_tendermint_comp_state_prod == "present"
 
 
 # - name: "Processing bench component"
@@ -68,7 +68,7 @@
         - "targets"
 
   when:
-    - bc_polkadot_comp_state_monitoring == "present"
+    - bc_tendermint_comp_state_monitoring == "present"
 
 
 # clear variable

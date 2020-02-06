@@ -1,14 +1,13 @@
 ---
-# polkadot.yml
+# tendermint.yml
 
-bc_polkadot_comp_state_boot: absent
-bc_polkadot_comp_state_prod: absent
-bc_polkadot_comp_state_monitoring: absent
-bc_polkadot_comp_state_bench: absent
+bc_tendermint_comp_state_boot: absent
+bc_tendermint_comp_state_prod: absent
+bc_tendermint_comp_state_monitoring: absent
+bc_tendermint_comp_state_bench: absent
 
-bc_polkadot_image: "tendermint/tendermint:v0.32.8"
-# bc_polkadot_exporter_image: "mixbytes/polkadot-prometheus-exporter"
+bc_tendermint_image: "tendermint/tendermint:v0.32.8"
 
-bc_polkadot_extra_endowed: "1001"
+bc_tendermint_extra_endowed: "1001"
 
-bc_polkadot_node_metrics_port: 26660
+bc_tendermint_node_metrics_port: 26660

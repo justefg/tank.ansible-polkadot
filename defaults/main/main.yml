@@ -1,8 +1,8 @@
 ---
-# defaults file for ansible-polkadot
+# defaults file for ansible-tendermint
 bc_debug: false
 bc_private_interface: enp0s8
-bc_name: polkadot
+bc_name: tendermint
 
 bc_path_general: "/opt"
 bc_path_config: "{{ bc_path_general }}/{{ bc_name }}/{{ bc_component_name }}/config"

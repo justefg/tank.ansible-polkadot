@@ -1,3 +1,3 @@
 ---
-# vars file for ansible-polkadot
+# vars file for ansible-tendermint
 grafana_dashboard_tmp_file: "/tmp/dashboard.json"

@@ -35,7 +35,7 @@
 - name: "Start tendermint container"
   docker_container:
     name: "{{ bc_name }}_{{ bc_component_name }}"
-    image: "{{ bc_polkadot_image }}"
+    image: "{{ bc_tendermint_image }}"
     command: node --proxy_app kvstore
     network_mode: host
     volumes:
@@ -52,61 +52,6 @@
       TMHOME: /config/node{{ play_hosts.index(inventory_hostname) | int }}
     stop_timeout: 600
     pull: true
-
-# - name: "Check health producer"
-#   uri:
-#     url: "http://localhost:9933"
-#     method: POST
-#     body: '{"jsonrpc":"2.0", "method":"system_health", "params": [], "id":1}'
-#     body_format: json
-#     status_code: 200
-#   register: check_producer
-#   retries: 15
-#   delay: 10
-#   until: check_producer is success
-#   tags:
-#     - prod
-
-# - name: "Set producer keys"
-#   uri:
-#     url: "http://localhost:9933"
-#     method: POST
-#     body: '{"jsonrpc":"2.0", "method":"author_insertKey", "params": [{{ item }}], "id":1}'
-#     body_format: json
-#     status_code: 200
-#   with_items:
-#     "{{ lookup('template', 'nodekeys/{{ bc_polkadot_extra_validator_id }}.txt.j2').splitlines() }}"
-#   tags:
-#     - prod
-
-# - name: "Stop the node to restart the container with the same command"
-#   tags:
-#     - prod
-#   shell: docker restart {{ bc_name }}-{{ bc_component_name }}
-
-# - name: "Check health producer after restart"
-#   uri:
-#     url: "http://localhost:9933"
-#     method: POST
-#     body: '{"jsonrpc":"2.0", "method":"system_health", "params": []}'
-#     body_format: json
-#     status_code: 200
-#   register: check_producer_after_reboot
-#   retries: 10
-#   delay: 5
-#   until: check_producer_after_reboot is success
-#   tags:
-#     - prod
-
-# - name: "Start {{ bc_name }}-{{ bc_component_name }}-metrics container"
-#   docker_container:
-#     name: "{{ bc_name }}-{{ bc_component_name }}-metrics"
-#     image: "{{ bc_polkadot_exporter_image }}"
-#     command: --exporter_port "{{ bc_polkadot_node_metrics_port }}"
-#     hostname: "{{ bc_name }}-{{ bc_component_name }}-metrics"
-#     network_mode: host
-#     stop_timeout: 600
-#     pull: true
 
 - name: List data about prod container
   debug:
