@@ -14,7 +14,7 @@
     src: "configs/bench/bench.config.json.j2"
     dest: "{{ bc_path_general }}/bench/config/bench.config.json"
 
-- name: "Create config for polkadot"
+- name: "Create config for tendermint"
   template:
     src: "configs/bench/polkadot.bench.config.json.j2"
     dest: "{{ bc_path_general }}/bench/config/polkadot.bench.config.json"
@@ -25,6 +25,6 @@
     dest: /usr/bin/bench
     mode: 0755
 
-- name: "Pull docker container"
-  docker_image:
-    name: mixbytes/tank.bench-polkadot
+# - name: "Pull docker container"
+#   docker_image:
+#     name: mixbytes/tank.bench-tendermint

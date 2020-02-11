@@ -1,8 +1,8 @@
 ---
 galaxy_info:
-  role_name: tank_polkadot
-  author: Alexey Makeev
-  description: Setup Polkadot blockchain components.
+  role_name: tank_tendermint
+  author: Emil Guseynov
+  description: Setup Tendermint blockchain components.
   company: MixBytes
 
   license: Apache 2.0
@@ -19,6 +19,6 @@ galaxy_info:
   galaxy_tags:
     - bench
     - blockchain
-    - polkadot
+    - tendermint
 
 dependencies: []

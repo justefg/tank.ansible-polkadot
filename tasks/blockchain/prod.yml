@@ -1,96 +1,57 @@
 ---
+
+- name: "Add all ip addresses"
+  vars:
+    hostnames: ""
+  set_fact:
+    hostnames: "{{ hostnames }} --hostname {{ item }}"
+  loop: "{{ groups['bcpeers'] }}"
+  delegate_to: localhost
+
+- name: "Generate config"
+  run_once: true
+  shell: tendermint testnet --v {{ groups['bcpeers'] | length }} --o /tmp/configs --config /tmp/config-template.toml --populate-persistent-peers --log_level "main:info,state:info,*:error" {{ hostnames }}
+  delegate_to: localhost
+
+- name: "Set localhost config dir permissions to 0777"
+  run_once: true
+  shell: chmod -R 777 /tmp/configs
+  delegate_to: localhost
+  become: true
+
 - name: Copy config and start nodes
-  hosts: "*"
-  tasks: 
-    - name: "Copy config to remote host"
-      copy:
-        src: /tmp/configs/node{{ play_hosts.index(inventory_hostname) | int }}
-        dest: /opt/config
-        mode: 0644
-    
-    - name: "Set config dir permissions to 0777"
-      shell: chmod -R 777 /opt/config/node{{ play_hosts.index(inventory_hostname) | int }}
+  copy:
+    src: /tmp/configs/node{{ play_hosts.index(inventory_hostname) | int }}
+    dest: /opt/config
+    mode: 0644
 
-    - name: "Install docker python module"
-      pip:
-        name: docker
+- name: "Set config dir permissions to 0777"
+  shell: chmod -R 777 /opt/config/node{{ play_hosts.index(inventory_hostname) | int }}
 
-    - name: "Start tendermint container"
-      docker_container:
-        name: "tendermint-producer"
-        image: "tendermint/tendermint"
-        command: node --proxy_app kvstore
-        network_mode: host
-        volumes:
-          - "/opt/config:/config"
-        exposed_ports:
-          - 26656
-          - 26657
-          - 26660
-        ports:
-          - "26656:26656"
-          - "26657:26657"
-          - "26660:26660"
-        env:
-          TMHOME: /config/node{{ play_hosts.index(inventory_hostname) | int }}
-        stop_timeout: 600
-        pull: true
+- name: "Install docker python module"
+  pip:
+    name: docker
 
-# - name: "Check health producer"
-#   uri:
-#     url: "http://localhost:9933"
-#     method: POST
-#     body: '{"jsonrpc":"2.0", "method":"system_health", "params": [], "id":1}'
-#     body_format: json
-#     status_code: 200
-#   register: check_producer
-#   retries: 15
-#   delay: 10
-#   until: check_producer is success
-#   tags:
-#     - prod
-
-# - name: "Set producer keys"
-#   uri:
-#     url: "http://localhost:9933"
-#     method: POST
-#     body: '{"jsonrpc":"2.0", "method":"author_insertKey", "params": [{{ item }}], "id":1}'
-#     body_format: json
-#     status_code: 200
-#   with_items:
-#     "{{ lookup('template', 'nodekeys/{{ bc_polkadot_extra_validator_id }}.txt.j2').splitlines() }}"
-#   tags:
-#     - prod
-
-# - name: "Stop the node to restart the container with the same command"
-#   tags:
-#     - prod
-#   shell: docker restart {{ bc_name }}-{{ bc_component_name }}
-
-# - name: "Check health producer after restart"
-#   uri:
-#     url: "http://localhost:9933"
-#     method: POST
-#     body: '{"jsonrpc":"2.0", "method":"system_health", "params": []}'
-#     body_format: json
-#     status_code: 200
-#   register: check_producer_after_reboot
-#   retries: 10
-#   delay: 5
-#   until: check_producer_after_reboot is success
-#   tags:
-#     - prod
-
-- name: "Start {{ bc_name }}-{{ bc_component_name }}-metrics container"
+- name: "Start tendermint container"
   docker_container:
-    name: "{{ bc_name }}-{{ bc_component_name }}-metrics"
-    image: "{{ bc_polkadot_exporter_image }}"
-    command: --exporter_port "{{ bc_polkadot_node_metrics_port }}"
-    hostname: "{{ bc_name }}-{{ bc_component_name }}-metrics"
+    name: "{{ bc_name }}_{{ bc_component_name }}"
+    image: "{{ bc_tendermint_image }}"
+    command: node --proxy_app kvstore
     network_mode: host
+    volumes:
+      - "/opt/config:/config"
+    exposed_ports:
+      - 26656
+      - 26657
+      - 26660
+    ports:
+      - "26656:26656"
+      - "26657:26657"
+      - "26660:26660"
+    env:
+      TMHOME: /config/node{{ play_hosts.index(inventory_hostname) | int }}
     stop_timeout: 600
     pull: true
-
 
 - name: List data about prod container
   debug:

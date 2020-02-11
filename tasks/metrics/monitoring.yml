@@ -15,7 +15,7 @@
     src: "configs/prometheus/target.yml.j2"
     dest: "/etc/prometheus/targets/{{ target_ip }}.yml"
   vars:
-    - target_ports: ["8080", "9100", "{{ bc_polkadot_node_metrics_port }}"]
+    - target_ports: ["8080", "9100", "{{ bc_tendermint_node_metrics_port }}"]
   when: install_promstack
   loop_control:
     loop_var: target_ip
